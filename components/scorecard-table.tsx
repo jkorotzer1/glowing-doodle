@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Recommendation, ScoredTeam } from "@/lib/model/types";
 import { MatchupBadges, BadgeLegend } from "./matchup-badges";
+import { InjuryModal, type InjuryTarget } from "./injury-modal";
 
 const REC_STYLES: Record<Recommendation, string> = {
   "TOP PICK": "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
@@ -223,12 +224,16 @@ export function ScorecardTable({
   rows,
   week,
   horizon,
+  season,
 }: {
   rows: ScoredTeam[];
   week: number;
   horizon: number;
+  season: number;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir } | null>(null);
+  /** Which game's injury report is open. null = none. */
+  const [injury, setInjury] = useState<InjuryTarget | null>(null);
 
   function onSort(key: SortKey) {
     setSort((prev) => {
@@ -344,8 +349,29 @@ export function ScorecardTable({
                   <span className="text-slate-600">BYE</span>
                 ) : (
                   <>
-                    <span className="text-slate-500">{r.isHome ? "vs" : "@"}</span>{" "}
-                    {r.opponent}
+                    {/*
+                      The matchup itself is the click target rather than the
+                      whole row: the row already has sortable numeric cells a
+                      user drags to select, and swallowing those clicks to open
+                      a modal would make the table hostile to read.
+                    */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setInjury({
+                          team: r.team,
+                          opponent: r.opponent!,
+                          isHome: r.isHome ?? false,
+                          week,
+                          season,
+                        })
+                      }
+                      title={`Injury report for ${r.team} vs ${r.opponent}`}
+                      className="rounded-sm underline decoration-slate-700 decoration-dotted underline-offset-4 hover:text-slate-200 hover:decoration-slate-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-500"
+                    >
+                      <span className="text-slate-500">{r.isHome ? "vs" : "@"}</span>{" "}
+                      {r.opponent}
+                    </button>
                     <MatchupBadges context={r.context} opponent={r.opponent} />
                   </>
                 )}
@@ -464,8 +490,13 @@ export function ScorecardTable({
         time to return to the model&rsquo;s own ranking. Teams with no number in
         a column stay at the bottom either way, and{" "}
         <span className="text-slate-400">#</span> always shows the rank by
-        Score, not the row&rsquo;s position.
+        Score, not the row&rsquo;s position. Click a matchup for a live injury
+        report on both sides.
       </p>
+
+      {injury && (
+        <InjuryModal target={injury} onClose={() => setInjury(null)} />
+      )}
     </div>
   );
 }

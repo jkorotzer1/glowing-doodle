@@ -28,6 +28,7 @@
     "ingest:silver:sheet": "tsx --env-file-if-exists=.env scripts/ingest-silver-sheet.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.2",
     "next": "^16.3.5",

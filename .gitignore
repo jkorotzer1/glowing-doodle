@@ -3,7 +3,9 @@ node_modules/
 next-env.d.ts
 *.log
 
-# Secrets. .env holds ODDS_API_KEY and SUBSTACK_SID.
+# Secrets. .env holds ODDS_API_KEY, SUBSTACK_SID and ANTHROPIC_API_KEY.
+# Each person running this writes their own into their own .env; the
+# committed template is .env.example, which carries the keys but no values.
 .env
 .env.local
 auth/

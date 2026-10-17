@@ -182,7 +182,12 @@ export function Dashboard(props: Props) {
 
       <div className="mt-5">
         {tab === "scorecard" && (
-          <ScorecardTable rows={rows} week={week} horizon={effectiveHorizon} />
+          <ScorecardTable
+            rows={rows}
+            week={week}
+            horizon={effectiveHorizon}
+            season={props.season}
+          />
         )}
         {tab === "plan" && (
           <PlanTable
